@@ -1,8 +1,8 @@
 # mandelbrot-fractal-pygame
 
-quelques exemples de programmes pour dessinser des fractales avec pygames, 
+quelques exemples de programmes pour dessinser des fractales avec pygame, 
 
-n'hésitez pas à modifier les valeurs HAUTEUR et LARGEUR de la fenetre et la valeur  MAXITERATION de la fractale
+n'hésitez pas à modifier les valeurs HAUTEUR et LARGEUR de la fenêtre et la valeur MAXITERATION 
 
-les couleurs sont effectués de manière assez bancale, 
+les couleurs sont effectuées de manière assez bancale
 
