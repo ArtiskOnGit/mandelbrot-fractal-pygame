@@ -26,7 +26,7 @@ class Game():
     self.zoom = 0.05# 0.000591 #1.25
     
     self.compute_dim(self.centerx, self.centery, self.zoom)
-    self.LARGEUR, self.HAUTEUR = 1080, 700 # taille de la fenêtre en pixels
+    self.LARGEUR, self.HAUTEUR = 700, 700 # taille de la fenêtre en pixels
     # Initialisation et création d'une fenêtre aux dimensions spécifiéés munie d'un titre
     
     self.screen = pygame.display.set_mode((self.LARGEUR,self.HAUTEUR))
