@@ -5,6 +5,10 @@ from time import sleep, time
 import numpy as np
 import yappi
 
+
+# this time, we using numpy array to actualize the surfaces
+
+
 class Game():
     def __init__(self):
         self.stopThread = False
@@ -20,17 +24,18 @@ class Game():
         self.drawn = False
         self.calculated = False
 
-        self.MAX_ITERATION = 100  # nombre d'itérations maximales avant de considérer que la suite converge
-        self.centerx = -0.75 #-0.59990625  # -0.750222 #-0.925 #-0.75
-        self.centery = 0 #-0.4290703125  # 0.266 #0
-        self.zoom = 1.25 #0.05  # 0.000591 #1.25
+        self.MAX_ITERATION = 500  # nombre d'itérations maximales avant de considérer que la suite converge
+        self.centerx = -0.75  # -0.59990625  # -0.750222 #-0.925 #-0.75
+        self.centery = 0  # -0.4290703125  # 0.266 #0
+        self.zoom = 1.25  # 0.05  # 0.000591 #1.25
 
         self.compute_dim(self.centerx, self.centery, self.zoom)
-        self.LARGEUR, self.HAUTEUR = 700,700  # taille de la fenêtre en pixels
+        self.LARGEUR, self.HAUTEUR = 1000, 1000  # taille de la fenêtre en pixels
 
         self.number_of_surfaces = 10
         self.calculated_surfaces = []
 
+        self.rect_surfaces = {}  # -> list of rect surfaces updatable using array so it is faster hopefully
 
         self.screen = pygame.display.set_mode((self.LARGEUR, self.HAUTEUR))
         pygame.display.set_caption("Fractale de Mandelbrot")
@@ -69,43 +74,50 @@ class Game():
 
     def compute_surface(self, x, y):
 
-      if self.LARGEUR-x > self.LARGEUR/self.number_of_surfaces :
-        l = int(self.LARGEUR/self.number_of_surfaces)
-      else:
-        l = int(self.LARGEUR-x)
+        if self.LARGEUR - x > self.LARGEUR / self.number_of_surfaces:
+            l = int(self.LARGEUR / self.number_of_surfaces)
+        else:
+            l = int(self.LARGEUR - x)
 
-      if self.HAUTEUR - y > self.HAUTEUR / self.number_of_surfaces:
-        h = int(self.HAUTEUR / self.number_of_surfaces)
-      else:
-        h = int(self.HAUTEUR - y)
+        if self.HAUTEUR - y > self.HAUTEUR / self.number_of_surfaces:
+            h = int(self.HAUTEUR / self.number_of_surfaces)
+        else:
+            h = int(self.HAUTEUR - y)
 
-      value = np.empty((), dtype=object)
-      value[()] = (100, 0, 0)
-      result_array = np.full((l, h), value, dtype=object) #initializing the array
+        # self.rect_surfaces[str(x) + str(y)]["surf"].fill((90, 140, 190))
+
+        value = np.empty((), dtype=object)
+        value[()] = (100, 0, 0)
+        result_array = np.full((l, h), value, dtype=object)  # initializing the array
+
+        for x1 in range(l):
+            # print(x1)
+            for y1 in range(h):
+
+                #calculating mandelbrot
+                C = complex((x1 + x) * (self.XMAX - self.XMIN) / self.LARGEUR + self.XMIN,
+                            ((y1 + y) * (self.YMIN - self.YMAX) / self.HAUTEUR + self.YMAX))
+                # print(C)
+                # calcul de mandelbrot
+                N = complex(0, 0)
+                n = 0
+                while (cmath.polar(N))[0] < 2 and n < self.MAX_ITERATION:
+                    N = N ** 2 + C
+                    n = n + 1
+
+                if n == self.MAX_ITERATION:
+                    result_array[x1][y1] = (255, 255, 255)
+                else:
+                    result_array[x1][y1] = (int(255 * n / self.MAX_ITERATION), int(255 * n / self.MAX_ITERATION),
+                                            int(255 * n / self.MAX_ITERATION))
+                    # print(int(255 * n / self.MAX_ITERATION))
 
 
-      for x1 in range(l):
-        #print(x1)
-        for y1 in range(h):
-          C = complex((x1 + x) * (self.XMAX - self.XMIN) / self.LARGEUR + self.XMIN,
-          ((y1 + y)* (self.YMIN - self.YMAX) / self.HAUTEUR + self.YMAX))
-          #print(C)
-          #calcul de mandelbrot
-          N = complex(0, 0)
-          n = 0
-          while (cmath.polar(N))[0] < 2 and n < self.MAX_ITERATION:
-            N = N ** 2 + C
-            n = n + 1
+        # print(np.array(result_array).shape)
+        result_array = np.array([list(arr) for arr in result_array])
+        self.rect_surfaces[str(x) + str(y)] = {"surf": pygame.surfarray.make_surface(result_array), "rect": pygame.Surface((l, h)).get_rect(topleft=(x, y))}
 
-          if n == self.MAX_ITERATION:
-            result_array[x1][y1] = (255, 255, 255)
-          else:
-            result_array[x1][y1] = (int(255 * n / self.MAX_ITERATION), int(255 * n / self.MAX_ITERATION), int(255 * n / self.MAX_ITERATION))
-            #print(int(255 * n / self.MAX_ITERATION))
-      self.calculated_surfaces.append({"x" : x, "y" : y, "result_array":result_array})
-
-
-
+        #self.calculated_surfaces.append({"x": x, "y": y, "result_array": result_array, "id": str(x) + str(y)})
 
     def run_surfaces(self, ):
         self.t1 = time()
@@ -117,13 +129,11 @@ class Game():
                     self.Ths.append(threading.Thread(target=self.compute_surface, args=(self.x, self.y),
                                                      daemon=True))  # create a new thead
                     self.Ths[-1].start()  # start the new thread
+
                     if self.stopThread:
                         break
                 if self.stopThread:
                     break
-
-
-
 
             if self.stopThread:
                 self.stopThread = False
@@ -133,12 +143,14 @@ class Game():
                 # self.NS_bad = []
             else:
 
-                self.calculated = True
+
                 self.stopThread = False
                 print(len(self.NS))
                 print("All thread started")
                 for t in self.Ths:
                     t.join()
+                sleep(1)
+                self.calculated = True
                 # yappi.stop()
                 # threads = yappi.get_thread_stats()
                 # for thread in threads:
@@ -200,15 +212,15 @@ class Game():
 
             for _ns_bad in self.NS_bad:
                 self.screen.set_at((_ns_bad[0], _ns_bad[1]), (
-                int(255 * _ns_bad[3] / self.MAX_ITERATION), int(255 * _ns_bad[3] / self.MAX_ITERATION),
-                int(255 * _ns_bad[3] / self.MAX_ITERATION)))
+                    int(255 * _ns_bad[3] / self.MAX_ITERATION), int(255 * _ns_bad[3] / self.MAX_ITERATION),
+                    int(255 * _ns_bad[3] / self.MAX_ITERATION)))
                 try:
                     self.NS_bad.remove(_ns_bad)
                 except:
                     pass
 
         pygame.display.flip()
-        if self.calculated and len(self.NS) + len(self.NS_bad) == 0:
+        if self.calculated :
             self.drawn = True
 
             # self.drawn = True
@@ -216,22 +228,25 @@ class Game():
         # print(int(255*(0.3 + 0.5 * _ns[2]/self.maxi)))
 
     def draw_surfaces(self):
-      if self.drawn == False:
-        if self.calculated_surfaces != []:
-          #print(f"{self.calculated_surfaces = }")
+        if self.rect_surfaces != {} :
 
-          for _s in self.calculated_surfaces:
-            #print(f"drawing x : {_s['x']} y : {_s['y']}")
-            for x2, col_l in enumerate(_s["result_array"]):
-              for y2, col in enumerate(col_l):
-                self.screen.set_at((_s["x"]+x2, _s["y"]+y2), col)
-              #print(f"setting screen at {_s['x']+x2} {_s['y']+y2} with color {col}")
-            self.calculated_surfaces.remove(_s)
-          print("pygame.flip")
-        pygame.display.flip()
+            for k, s in self.rect_surfaces.copy().items():
+                self.screen.blit(s["surf"], s["rect"])
+                del self.rect_surfaces[k]
+            print(self.rect_surfaces.keys())
 
 
+        # print(f"{self.calculated_surfaces = }")
 
+        # for _s in self.calculated_surfaces:
+        #     # print(f"drawing x : {_s['x']} y : {_s['y']}")
+        #     for x2, col_l in enumerate(_s["result_array"]):
+        #         for y2, col in enumerate(col_l):
+        #             self.screen.set_at((_s["x"] + x2, _s["y"] + y2), col)
+        #         # print(f"setting screen at {_s['x']+x2} {_s['y']+y2} with color {col}")
+        #     self.calculated_surfaces.remove(_s)
+            print("pygame.flip")
+            pygame.display.flip()
 
     def loop(self):
         self.clock.tick(144)

@@ -2,7 +2,7 @@ import pygame
 import cmath
 
 # Constantes
-MAX_ITERATION = 20 # nombre d'itérations maximales avant de considérer que la suite converge
+MAX_ITERATION = 500 # nombre d'itérations maximales avant de considérer que la suite converge
 XMIN, XMAX, YMIN, YMAX = -2, +0.5, -1.25, +1.25 # bornes du repère
 LARGEUR, HAUTEUR = 700, 700 # taille de la fenêtre en pixels
 
