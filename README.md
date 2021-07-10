@@ -11,7 +11,7 @@ les couleurs sont effectuées de manière assez bancale
 
 ## fonctionnement idéal:
 
-# lancement fenetre pygame, initialisation du thread de calcul:
+#### lancement fenetre pygame, initialisation du thread de calcul:
 
 	# thread de calcul:
 		- sépare la grille en carré de x par x et mets chaque carré dans une Queue/liste
@@ -35,4 +35,4 @@ les couleurs sont effectuées de manière assez bancale
 		
 		
 		
-### c'est fait! et avec du calcul gpu avec jit en plus !!!!!!!!
+# c'est fait! et avec du calcul gpu avec jit en plus !!!!!!!!
