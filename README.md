@@ -7,6 +7,11 @@ n'hésitez pas à modifier les valeurs HAUTEUR et LARGEUR de la fenêtre et la v
 les couleurs sont effectuées de manière assez bancale
 
 
+librairies à intaller (avec pip notamment):
+pygame(affichage graphique), numpy(traitement de données), numba(optimisation gpu) , yappi(comme cprofile mais fonctionne avec des threads)
+
+
+
 
 
 ## fonctionnement idéal:
