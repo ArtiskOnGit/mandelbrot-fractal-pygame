@@ -32,3 +32,7 @@ les couleurs sont effectuées de manière assez bancale
 		- regarde si nouveaux array dans L
 		- sinon regarde dans la liste L si des choses sont présentes et les actualise si c'est le cas, enleve les arrays de déssinés de la liste
 		- screen.blit()
+		
+		
+		
+###c'est fait! et avec du calcul gpu avec jit en plus !!!!!!!!
