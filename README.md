@@ -1,6 +1,11 @@
 # mandelbrot-fractal-pygame
 
-quelques exemples de programmes pour dessinser des fractales avec pygame, 
+This is a Mandelbrot fractal explorer using pygame for rendering and numba (gpu) for the calculation.
+You will need numpy, pygame, numba and yappi. You can simply run each file with python using :
+```python3 file.py```. Each file explains what is uses in its name. 
+
+
+quelques exemples de programmes pour dessiner des fractales avec pygame, 
 
 n'hésitez pas à modifier les valeurs HAUTEUR et LARGEUR de la fenêtre et la valeur MAXITERATION 
 
