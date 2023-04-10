@@ -47,4 +47,4 @@ pygame(affichage graphique), numpy(traitement de données), numba(optimisation g
 		
 		
 		
-# c'est fait! et avec du calcul gpu avec jit en plus !!!!!!!!
+c'est fait! et avec du calcul gpu avec jit
